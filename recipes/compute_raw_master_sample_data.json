@@ -1,0 +1,101 @@
+{
+  "type": "sync",
+  "neverRecomputeExistingPartitions": false,
+  "params": {
+    "schemaMode": "STRICT_SYNC",
+    "forcePipelineableForTests": false,
+    "engineParams": {
+      "maxThreads": 4,
+      "tdchParams": {
+        "splitMode": "DEFAULT",
+        "numberOfExecutors": 2
+      },
+      "synapseParams": {
+        "usePolybase": false
+      },
+      "sparkSQL": {
+        "overwriteOutputSchema": false,
+        "useGlobalMetastore": false,
+        "readParams": {
+          "mode": "AUTO",
+          "autoModeRepartitionInto": 10,
+          "map": {}
+        },
+        "sparkConfig": {
+          "inheritConf": "default",
+          "conf": []
+        },
+        "executionEngine": "SPARK_SUBMIT",
+        "pipelineAllowStart": true,
+        "pipelineAllowMerge": true,
+        "skipPrerunValidate": false
+      },
+      "impala": {
+        "forceStreamMode": true
+      },
+      "hive": {
+        "inheritConf": "default",
+        "hiveconf": [],
+        "executionEngine": "HIVESERVER2",
+        "addDkuUdf": false,
+        "skipPrerunValidate": false
+      },
+      "sqlPipelineParams": {
+        "pipelineAllowStart": true,
+        "pipelineAllowMerge": true
+      },
+      "cdePipelineParams": {
+        "pipelineAllowStart": true,
+        "pipelineAllowMerge": true
+      },
+      "redshiftParams": {
+        "writeDatesInParquet": true
+      },
+      "lowerCaseSchemaIfEngineRequiresIt": false,
+      "containerSelection": {
+        "containerMode": "INHERIT"
+      }
+    }
+  },
+  "customMeta": {
+    "kv": {}
+  },
+  "redispatchPartitioning": false,
+  "maxRunningActivities": 0,
+  "hashPropagationBehavior": "INHERIT",
+  "variables": {},
+  "dkuProperties": [],
+  "inputs": {
+    "main": {
+      "items": [
+        {
+          "ref": "master_sample_data",
+          "deps": []
+        }
+      ]
+    }
+  },
+  "outputs": {
+    "main": {
+      "items": [
+        {
+          "ref": "raw_master_sample_data",
+          "appendMode": false
+        }
+      ]
+    }
+  },
+  "labels": [],
+  "creationTag": {
+    "versionNumber": 0,
+    "lastModifiedBy": {
+      "login": "brian.figg"
+    },
+    "lastModifiedOn": 1789506687455
+  },
+  "tags": [],
+  "customFields": {},
+  "checklists": {
+    "checklists": []
+  }
+}
