@@ -53,3 +53,37 @@ document.getElementById('save-button').addEventListener('click', async () => {
     alert('Failed to save diagram.');
   }
 });
+
+
+document.getElementById('upload-input').addEventListener('change', function(event) {
+  const file = event.target.files[0];
+  
+  // Stop if no file was selected
+  if (!file) return; 
+
+  const reader = new FileReader();
+  
+  // What to do when the file finishes loading
+  reader.onload = async function(e) {
+    const uploadedXML = e.target.result;
+    
+    try {
+      // Load the new XML into the modeler
+      await modeler.importXML(uploadedXML);
+      
+      // Re-center the canvas on the newly uploaded diagram
+      modeler.get('canvas').zoom('fit-viewport');
+      console.log('Diagram uploaded successfully!');
+      
+    } catch (err) {
+      console.error('Error rendering uploaded diagram', err);
+      alert('Failed to load the BPMN file. Ensure it is a valid BPMN 2.0 XML.');
+    }
+    
+    // Reset the input so the same file can be uploaded again if needed
+    event.target.value = ''; 
+  };
+  
+  // Read the file as text
+  reader.readAsText(file);
+});
