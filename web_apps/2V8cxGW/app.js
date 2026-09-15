@@ -31,3 +31,25 @@ modeler.importXML(bpmnXML)
   .catch((err) => {
     console.error('Error rendering BPMN diagram', err);
   });
+
+document.getElementById('save-button').addEventListener('click', async () => {
+  try {
+    // Extract the XML from the modeler
+    const { xml } = await modeler.saveXML({ format: true });
+    
+    // Create a downloadable blob
+    const blob = new Blob([xml], { type: 'text/xml' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'process.bpmn';
+    
+    // Trigger the download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+  } catch (err) {
+    console.error('Error saving diagram', err);
+    alert('Failed to save diagram.');
+  }
+});
