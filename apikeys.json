@@ -25,5 +25,32 @@
     "key": "dkuaps-kAWRVDkBgxmdGoumwc0Yjv50qADwZdjC",
     "label": "Key for Web app BPMN(2V8cxGW)",
     "createdOn": 1789492853202
+  },
+  {
+    "execSQLLike": false,
+    "localDatasets": [],
+    "projectPrivileges": {
+      "admin": false,
+      "editPermissions": false,
+      "readProjectContent": false,
+      "writeProjectContent": false,
+      "exportDatasetsData": false,
+      "readDashboards": false,
+      "writeDashboards": false,
+      "moderateDashboards": false,
+      "publishToDataCollections": false,
+      "shareToWorkspaces": false,
+      "runScenarios": false,
+      "manageDashboardAuthorizations": false,
+      "manageExposedElements": false,
+      "manageAdditionalDashboardUsers": false,
+      "executeApp": false
+    },
+    "onBehalf": "eUuEi2j",
+    "expiresOn": 0,
+    "id": "WsY11QNPjHiXGLYS",
+    "key": "dkuaps-3tHzDGn05WTXsBrMQKwPG8QyKBwS6RQO",
+    "label": "Key for Web app Sample Collection Process(eUuEi2j)",
+    "createdOn": 1789505390718
   }
 ]
