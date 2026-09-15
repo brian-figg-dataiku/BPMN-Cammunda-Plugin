@@ -2,7 +2,7 @@
   "type": "STANDARD",
   "hasLegacyBackendURL": false,
   "params": {
-    "backendEnabled": false,
+    "backendEnabled": true,
     "enableJavascriptModules": false,
     "autoStartBackend": false,
     "hideJSSecurityPanel": false,
@@ -17,6 +17,7 @@
       "jquery",
       "dataiku"
     ],
+    "readinessProbeTimeoutSeconds": 0,
     "infra": {
       "containerSelection": {
         "containerMode": "INHERIT"
@@ -50,7 +51,7 @@
   },
   "config": {},
   "name": "BPMN",
-  "apiKey": "e:AES:X3:tTdfYwL5hU4nChW433MlNTH/IMBaHEWDIgEB6i0SyyCb4degtjPdgVLjN6eJj2DBuoiiNbqUSaMUQWkqpFpnf+yUlA\u003d\u003d",
+  "apiKey": "e:AES:X3:EHjAyTPnx6LxpoPTlVqeRkb0TvsqWplC97SXDXu1Qhctd59YdCzD1z7THCKPBjXofvtlcIaASbCAxCcbWxGcYBgVrg\u003d\u003d",
   "creationTag": {
     "versionNumber": 0,
     "lastModifiedBy": {
