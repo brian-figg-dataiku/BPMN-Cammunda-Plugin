@@ -340,9 +340,14 @@ def save_sample_returned():
 
 @app.route('/finalize_to_master_sample_data', methods=['POST'])
 def finalize_to_master_sample_data():
-    """Append latest sample details (time+location) and session_id to raw_master_sample_data.
+    """Append latest sample details and session_id to master_sample_data.
 
-    Enforces session_id uniqueness (idempotent): if session_id already exists in target, do not insert again.
+    We do NOT write to raw_master_sample_data here (that may be Snowflake-backed).
+    We only update the editable master_sample_data dataset, then trigger the sync
+    recipe that refreshes raw_master_sample_data.
+
+    Enforces session_id uniqueness (idempotent): if session_id already exists in
+    master_sample_data, do not insert again.
     """
     if init_error:
         return json.dumps({"error": init_error}), 500
@@ -361,8 +366,8 @@ def finalize_to_master_sample_data():
     df = df.sort_values('sample_collection_time')
     last = df.iloc[-1]
 
-    # Append to target dataset (Snowflake-backed in your Flow)
-    target_name = "raw_master_sample_data"
+    # Append to editable dataset only
+    target_name = "master_sample_data"
     try:
         target = dataiku.Dataset(target_name)
     except Exception:
@@ -373,7 +378,7 @@ def finalize_to_master_sample_data():
         existing = target.get_dataframe(limit=100000)
         if 'session_id' in existing.columns and (existing['session_id'] == session_id).any():
             return json.dumps({"ok": True, "skipped": True, "reason": "session_id already exists"})
-    except Exception as e:
+    except Exception:
         # If we can't read, still attempt insert; user may not have read grants but has insert grants
         pass
 
