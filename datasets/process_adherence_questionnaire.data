@@ -1,0 +1,23 @@
+{
+  "data": [
+    [
+      "9b7c0e41-9e91-419d-a58d-f956c1262e5a",
+      "45",
+      "No",
+      "No",
+      "Yes",
+      "2026-09-15T21:09:51.891669+00:00"
+    ]
+  ],
+  "schema": {
+    "columns": [
+      {"name":"session_id","type":"string"},
+      {"name":"sampling_seconds","type":"bigint"},
+      {"name":"sanitized_60s","type":"string"},
+      {"name":"ppe_present","type":"string"},
+      {"name":"contamination_last_7_days","type":"string"},
+      {"name":"submitted_at","type":"string"}
+    ],
+    "userModified": true
+  }
+}
