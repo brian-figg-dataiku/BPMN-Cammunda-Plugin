@@ -89,6 +89,28 @@ def _safe_parse_bpmn():
         return None, str(e)
 
 
+def _auto_map_step_ids(nodes):
+    """Heuristic mapping from BPMN node names to the webapp steps."""
+    def pick_contains(*needles):
+        needles = [n.lower() for n in needles if n]
+        for nid, n in nodes.items():
+            name = (n.get('name') or '').lower()
+            if not name:
+                continue
+            if all(x in name for x in needles):
+                return nid
+        return None
+
+    return {
+        "manufacturingEnded": pick_contains("manufacturing", "ended") or pick_contains("manufacturing"),
+        "sampleDetails": pick_contains("sample", "collection", "details") or pick_contains("collection", "details"),
+        "questionnaire": pick_contains("adherence") or pick_contains("questionnaire"),
+        "deviation": pick_contains("deviation"),
+        "deviationConfirmed": pick_contains("deviation", "confirmed") or pick_contains("confirmed"),
+        "sampleReturned": pick_contains("sample", "returned") or pick_contains("returned"),
+    }
+
+
 def _utc_now_iso():
     return datetime.now(timezone.utc).isoformat()
 
@@ -155,11 +177,31 @@ def bpmn_summary():
     if err:
         return json.dumps({'error': err}), 500
 
+    step_map = _auto_map_step_ids(bpmn['nodes'])
+
     return json.dumps({
         'startEventId': bpmn['startEventId'],
         'nodeCount': len(bpmn['nodes']),
         'sequenceFlowCount': len(bpmn['sequenceFlows']),
-        'startOutgoing': bpmn['outgoing'].get(bpmn['startEventId'], []) if bpmn['startEventId'] else []
+        'startOutgoing': bpmn['outgoing'].get(bpmn['startEventId'], []) if bpmn['startEventId'] else [],
+        'stepMap': step_map
+    })
+
+
+@app.route('/bpmn_nodes', methods=['GET'])
+def bpmn_nodes():
+    """Return parsed BPMN nodes (id/type/name) and adjacency."""
+    bpmn, err = _safe_parse_bpmn()
+    if err:
+        return json.dumps({'error': err}), 500
+
+    return json.dumps({
+        'startEventId': bpmn['startEventId'],
+        'nodes': list(bpmn['nodes'].values()),
+        'sequenceFlows': bpmn['sequenceFlows'],
+        'outgoing': bpmn['outgoing'],
+        'incoming': bpmn['incoming'],
+        'stepMap': _auto_map_step_ids(bpmn['nodes'])
     })
 @app.route('/start_session', methods=['POST'])
 def start_session():
