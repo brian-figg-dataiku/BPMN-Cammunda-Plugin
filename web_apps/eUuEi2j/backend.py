@@ -1,15 +1,92 @@
 import json
 import uuid
 from datetime import datetime, timezone
+import xml.etree.ElementTree as ET
 
 import dataiku
 from flask import request
 
 # DSS provides the Flask app object in standard webapps
 
+BPMN_FOLDER_ID = "lRtmKjvu"  # managed folder bpmn_log
+BPMN_FILENAME = "process.bpmn"
+
+
+# DSS provides the Flask app object in standard webapps
+
 SAMPLE_DETAILS_DS = "sample_collection_details"
 PROCESS_ADHERENCE_DS = "process_adherence_questionnaire"
 DEVIATION_DS = "deviation_log"
+
+
+def _read_bpmn_xml():
+    folder = dataiku.Folder(BPMN_FOLDER_ID)
+    with folder.get_download_stream(BPMN_FILENAME) as f:
+        return f.read()
+
+
+def _local(tag):
+    # Strip XML namespace
+    if '}' in tag:
+        return tag.split('}', 1)[1]
+    return tag
+
+
+def _parse_bpmn_sequence():
+    """Parse BPMN into a simple directed graph from <sequenceFlow>.
+
+    Uses element 'id' as the stable key.
+    """
+    xml_bytes = _read_bpmn_xml()
+    root = ET.fromstring(xml_bytes)
+
+    nodes = {}
+    outgoing = {}
+    incoming = {}
+    seq_flows = []
+    start_events = []
+
+    for el in root.iter():
+        t = _local(el.tag)
+        el_id = el.attrib.get('id')
+        if not el_id:
+            continue
+
+        if t in (
+            'startEvent', 'endEvent', 'task', 'userTask', 'serviceTask', 'scriptTask',
+            'exclusiveGateway', 'parallelGateway', 'inclusiveGateway', 'eventBasedGateway'
+        ):
+            nodes[el_id] = {
+                'id': el_id,
+                'type': t,
+                'name': el.attrib.get('name', '')
+            }
+            if t == 'startEvent':
+                start_events.append(el_id)
+
+        if t == 'sequenceFlow':
+            src = el.attrib.get('sourceRef')
+            dst = el.attrib.get('targetRef')
+            if src and dst:
+                seq_flows.append({'id': el_id, 'source': src, 'target': dst, 'name': el.attrib.get('name', '')})
+                outgoing.setdefault(src, []).append(dst)
+                incoming.setdefault(dst, []).append(src)
+
+    start_event = start_events[0] if start_events else None
+    return {
+        'startEventId': start_event,
+        'nodes': nodes,
+        'sequenceFlows': seq_flows,
+        'outgoing': outgoing,
+        'incoming': incoming
+    }
+
+
+def _safe_parse_bpmn():
+    try:
+        return _parse_bpmn_sequence(), None
+    except Exception as e:
+        return None, str(e)
 
 
 def _utc_now_iso():
@@ -72,7 +149,18 @@ except Exception as e:
 else:
     init_error = None
 
+@app.route('/bpmn_summary', methods=['GET'])
+def bpmn_summary():
+    bpmn, err = _safe_parse_bpmn()
+    if err:
+        return json.dumps({'error': err}), 500
 
+    return json.dumps({
+        'startEventId': bpmn['startEventId'],
+        'nodeCount': len(bpmn['nodes']),
+        'sequenceFlowCount': len(bpmn['sequenceFlows']),
+        'startOutgoing': bpmn['outgoing'].get(bpmn['startEventId'], []) if bpmn['startEventId'] else []
+    })
 @app.route('/start_session', methods=['POST'])
 def start_session():
     if init_error:
