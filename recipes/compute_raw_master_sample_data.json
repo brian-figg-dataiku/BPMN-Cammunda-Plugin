@@ -80,7 +80,7 @@
       "items": [
         {
           "ref": "raw_master_sample_data",
-          "appendMode": false
+          "appendMode": true
         }
       ]
     }
