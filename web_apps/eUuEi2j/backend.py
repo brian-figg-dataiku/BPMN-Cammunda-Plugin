@@ -340,7 +340,10 @@ def save_sample_returned():
 
 @app.route('/finalize_to_master_sample_data', methods=['POST'])
 def finalize_to_master_sample_data():
-    """Append latest sample details (time+location) and session_id to raw_master_sample_data."""
+    """Append latest sample details (time+location) and session_id to raw_master_sample_data.
+
+    Enforces session_id uniqueness (idempotent): if session_id already exists in target, do not insert again.
+    """
     if init_error:
         return json.dumps({"error": init_error}), 500
 
@@ -365,6 +368,15 @@ def finalize_to_master_sample_data():
     except Exception:
         return json.dumps({"error": f"Dataset '{target_name}' not found in this project."}), 500
 
+    # Idempotency / uniqueness check
+    try:
+        existing = target.get_dataframe(limit=100000)
+        if 'session_id' in existing.columns and (existing['session_id'] == session_id).any():
+            return json.dumps({"ok": True, "skipped": True, "reason": "session_id already exists"})
+    except Exception as e:
+        # If we can't read, still attempt insert; user may not have read grants but has insert grants
+        pass
+
     with target.get_writer() as w:
         w.write_row_dict({
             "session_id": session_id,
@@ -372,4 +384,4 @@ def finalize_to_master_sample_data():
             "sample_collection_time": str(last['sample_collection_time'])
         })
 
-    return json.dumps({"ok": True})
+    return json.dumps({"ok": True, "skipped": False})
