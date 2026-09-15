@@ -52,7 +52,14 @@
     }
   },
   "schema": {
-    "columns": [],
+    "columns": [
+      {"name":"session_id","type":"string"},
+      {"name":"sampling_seconds","type":"bigint"},
+      {"name":"sanitized_60s","type":"string"},
+      {"name":"ppe_present","type":"string"},
+      {"name":"contamination_last_7_days","type":"string"},
+      {"name":"submitted_at","type":"string"}
+    ],
     "userModified": true
   },
   "typeSystemVersion": "V2",
