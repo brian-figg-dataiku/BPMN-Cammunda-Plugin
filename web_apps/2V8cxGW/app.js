@@ -15,4 +15,21 @@ try {
     // import failed :-(
   }
 
+function fetchDiagram(url) {
+  return fetch(url).then(response => response.text());
+}
+
+async function run() {
+  const diagram = await fetchDiagram('path-to-diagram.bpmn');
+
+  try {
+    await viewer.importXML(diagram);
+    // ...
+  } catch (err) {
+    // ...
+  }
+}
+
+run();
+
 
