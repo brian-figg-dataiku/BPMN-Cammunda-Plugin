@@ -1,4 +1,4 @@
-<script>
+
   // the diagram you are going to display
   const bpmnXML;
 
@@ -14,4 +14,3 @@
   } catch (err) {
     // import failed :-(
   }
-</script>
