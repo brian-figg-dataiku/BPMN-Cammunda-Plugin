@@ -1,5 +1,5 @@
 {
-  "type": "Databricks",
+  "type": "Inline",
   "managed": true,
   "featureGroup": false,
   "checklists": {
@@ -38,33 +38,16 @@
   },
   "tags": [],
   "params": {
-    "connection": "databricks",
+    "keepTrackOfChanges": false,
     "notReadyIfEmpty": false,
-    "mode": "table",
-    "partitioningType": "custom",
-    "normalizeDoubles": true,
-    "catalog": "ds-platform",
-    "table": "design_${projectKey}_master_sample_data",
-    "schema": "default",
-    "tableCreationMode": "auto",
-    "writeInsertBatchSize": 10000,
-    "writeDescriptionsAsSQLComment": false,
-    "writeDatasetDescriptionAsSQLComment": "INHERIT",
-    "writeColumnDescriptionsAsSQLComment": "INHERIT",
-    "noDropOnSchemaMismatch": true,
-    "writeJDBCBadDataBehavior": "DISCARD_ROW",
-    "datetimenotzReadMode": "AS_IS",
-    "dateonlyReadMode": "AS_IS",
-    "variablesExpansionLoopConfig": {
-      "enabled": false,
-      "mode": "CREATE_VARIABLE_FOR_EACH_COLUMN",
-      "replacements": []
-    },
-    "sparkJdbcAccess": "NONE",
-    "numPartitions": -1
+    "enableClipboardApi": false
   },
   "schema": {
-    "columns": [],
+    "columns": [
+      {"name":"session_id","type":"string"},
+      {"name":"sample_collection_location","type":"string"},
+      {"name":"sample_collection_time","type":"string"}
+    ],
     "userModified": true
   },
   "typeSystemVersion": "V2",
