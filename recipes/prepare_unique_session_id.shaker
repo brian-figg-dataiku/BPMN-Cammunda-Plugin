@@ -31,7 +31,18 @@
   "columnOrder": [],
   "columnUseScientificNotationByName": {},
   "exploreUIParams": {},
-  "steps": [],
+  "steps": [
+    {
+      "name": "Generate new session_id UUID per row",
+      "metaType": "PROCESSOR",
+      "type": "CreateColumnWithGREL",
+      "params": {
+        "expression": "uuid()",
+        "column": "session_id",
+        "errorColumn": ""
+      }
+    }
+  ],
   "maxProcessedMemTableBytes": -1,
   "previewMode": "ALL_ROWS",
   "vizSampling": {
