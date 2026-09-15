@@ -3,7 +3,7 @@ from flask import request, jsonify
 import json
 
 # Initialize the folder connection
-folder = dataiku.Folder("YOUR_FOLDER_ID")
+folder = dataiku.Folder("lRtmKjvu")
 FILE_NAME = "process.bpmn"
 
 @app.route('/save', methods=['POST'])
