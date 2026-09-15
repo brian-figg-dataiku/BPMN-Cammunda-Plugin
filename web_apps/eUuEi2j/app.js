@@ -102,9 +102,17 @@ function viewManufacturingEnded() {
   const yesBtn = el('button', { class: 'primary', onclick: async () => {
     clearMessage();
     try {
+      // Always provision a fresh session id on each click and avoid double-clicks
+      yesBtn.disabled = true;
+      yesBtn.textContent = 'Starting...';
       const r = await api('start_session', {});
       navigate(`#sample-details?session_id=${encodeURIComponent(r.session_id)}`);
     } catch (e) { showError(e); }
+    finally {
+      // If we stayed on the same page due to error, re-enable
+      yesBtn.disabled = false;
+      yesBtn.textContent = 'Yes';
+    }
   }}, 'Yes');
 
   const noBtn = el('button', { class: 'secondary', onclick: async () => {
