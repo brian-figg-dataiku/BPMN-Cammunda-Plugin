@@ -2,7 +2,7 @@
   "type": "STANDARD",
   "hasLegacyBackendURL": false,
   "params": {
-    "backendEnabled": false,
+    "backendEnabled": true,
     "enableJavascriptModules": false,
     "autoStartBackend": false,
     "hideJSSecurityPanel": false,
@@ -14,7 +14,6 @@
     "backendAPIAccessEnabled": false,
     "backendFramework": "FLASK",
     "libraries": [
-      "jquery",
       "dataiku"
     ],
     "infra": {
