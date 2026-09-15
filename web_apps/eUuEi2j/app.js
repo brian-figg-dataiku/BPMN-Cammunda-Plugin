@@ -280,13 +280,19 @@ function viewDeviationConfirmed() {
       }
     } catch (e) { showError(e); }
   }},
-  }},
     el('label', null, 'Was the deviation confirmed?'),
     sel,
     el('div', { class: 'spacer' }),
     el('button', { class: 'primary', type: 'submit' }, 'Submit')
   );
 
+  setView('Deviation Confirmed', el('div', { class: 'card' },
+    el('p', { class: 'muted' }, `Session: ${sessionId}`),
+    form
+  ));
+}
+
+function viewSampleReturned() {
   setView('Deviation Confirmed', el('div', { class: 'card' },
     el('p', { class: 'muted' }, `Session: ${sessionId}`),
     form
