@@ -1,0 +1,17 @@
+{
+  "data": [
+    [
+      "9b7c0e41-9e91-419d-a58d-f956c1262e5a",
+      "Machine A Sample Port 1",
+      "2026-09-15T21:09:41.495410+00:00"
+    ]
+  ],
+  "schema": {
+    "columns": [
+      {"name":"session_id","type":"string"},
+      {"name":"sample_collection_location","type":"string"},
+      {"name":"sample_collection_time","type":"string"}
+    ],
+    "userModified": true
+  }
+}
