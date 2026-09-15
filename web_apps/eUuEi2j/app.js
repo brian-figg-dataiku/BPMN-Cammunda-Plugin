@@ -271,9 +271,15 @@ function viewDeviationConfirmed() {
       const v = sel.value;
       if (!v) throw new Error('Please select yes/no.');
       await api('save_deviation', { session_id: sessionId, deviation: 'Yes', deviation_confirmed: v });
-      showInfo('Deviation recorded. Returning to home...');
-      setTimeout(() => navigate('#home'), 1400);
+      if (v === 'Yes') {
+        showInfo('Deviation recorded. Returning to home...');
+        setTimeout(() => navigate('#home'), 1400);
+      } else {
+        // If deviation not confirmed, proceed to sample returned step
+        navigate(`#sample-returned?session_id=${encodeURIComponent(sessionId)}`);
+      }
     } catch (e) { showError(e); }
+  }},
   }},
     el('label', null, 'Was the deviation confirmed?'),
     sel,
