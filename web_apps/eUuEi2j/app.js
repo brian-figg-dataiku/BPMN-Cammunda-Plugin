@@ -1,11 +1,13 @@
 // Sample Collection Process webapp frontend
 // Multi-step flow with backend persistence
 
-async function api(route, payload) {
+let BPMN_STEP_MAP = null;
+
+async function api(route, payload, method) {
   const res = await fetch(getWebAppBackendUrl(route), {
-    method: 'POST',
+    method: method || 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload || {})
+    body: method === 'GET' ? undefined : JSON.stringify(payload || {})
   });
   const txt = await res.text();
   let data;
@@ -16,6 +18,17 @@ async function api(route, payload) {
   }
   return data;
 }
+
+async function loadBpmnStepMap() {
+  try {
+    const r = await api('bpmn_summary', null, 'GET');
+    BPMN_STEP_MAP = r.stepMap || null;
+  } catch (e) {
+    // Non-blocking
+    BPMN_STEP_MAP = null;
+  }
+}
+
 
 function el(tag, attrs, ...children) {
   const node = document.createElement(tag);
@@ -38,8 +51,16 @@ function setView(title, contentNode) {
   document.getElementById('page-title').textContent = title || '';
   const root = document.getElementById('app');
   root.innerHTML = '';
+
+  if (BPMN_STEP_MAP) {
+    root.appendChild(el('div', { class: 'muted', style: 'margin-bottom:10px' },
+      `BPMN step ids (auto-mapped): ${JSON.stringify(BPMN_STEP_MAP)}`
+    ));
+  }
+
   root.appendChild(contentNode);
 }
+
 
 function showError(err) {
   const msg = (err && err.message) ? err.message : String(err);
@@ -317,4 +338,7 @@ function route() {
 }
 
 window.addEventListener('hashchange', route);
-window.addEventListener('load', route);
+window.addEventListener('load', async () => {
+  await loadBpmnStepMap();
+  route();
+});
