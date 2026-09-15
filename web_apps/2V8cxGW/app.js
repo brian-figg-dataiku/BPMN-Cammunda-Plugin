@@ -31,59 +31,39 @@ modeler.importXML(bpmnXML)
   .catch((err) => {
     console.error('Error rendering BPMN diagram', err);
   });
-
-document.getElementById('save-button').addEventListener('click', async () => {
-  try {
-    // Extract the XML from the modeler
-    const { xml } = await modeler.saveXML({ format: true });
-    
-    // Create a downloadable blob
-    const blob = new Blob([xml], { type: 'text/xml' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'process.bpmn';
-    
-    // Trigger the download
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-  } catch (err) {
-    console.error('Error saving diagram', err);
-    alert('Failed to save diagram.');
-  }
+// 1. Auto-load the diagram from Dataiku when the webapp starts
+window.addEventListener('load', async () => {
+    try {
+        const response = await fetch(getWebAppBackendUrl('/load'));
+        if (response.ok) {
+            const data = await response.json();
+            await modeler.importXML(data.xml);
+            modeler.get('canvas').zoom('fit-viewport');
+            console.log('Loaded from Dataiku folder!');
+        } else {
+            console.log('No existing diagram found. Starting blank.');
+        }
+    } catch (err) {
+        console.error('Failed to load from backend', err);
+    }
 });
 
-// READ BPMN FILE
-document.getElementById('upload-input').addEventListener('change', function(event) {
-  const file = event.target.files[0];
-  
-  // Stop if no file was selected
-  if (!file) return; 
-
-  const reader = new FileReader();
-  
-  // What to do when the file finishes loading
-  reader.onload = async function(e) {
-    const uploadedXML = e.target.result;
-    
+// 2. Change the save button to push to Dataiku
+document.getElementById('save-button').addEventListener('click', async () => {
     try {
-      // Load the new XML into the modeler
-      await modeler.importXML(uploadedXML);
-      
-      // Re-center the canvas on the newly uploaded diagram
-      modeler.get('canvas').zoom('fit-viewport');
-      console.log('Diagram uploaded successfully!');
-      
+        const { xml } = await modeler.saveXML({ format: true });
+        
+        const response = await fetch(getWebAppBackendUrl('/save'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ xml: xml })
+        });
+
+        if (response.ok) {
+            alert('Diagram saved securely to Dataiku Managed Folder!');
+        }
     } catch (err) {
-      console.error('Error rendering uploaded diagram', err);
-      alert('Failed to load the BPMN file. Ensure it is a valid BPMN 2.0 XML.');
+        console.error('Error saving to backend', err);
+        alert('Failed to save diagram.');
     }
-    
-    // Reset the input so the same file can be uploaded again if needed
-    event.target.value = ''; 
-  };
-  
-  // Read the file as text
-  reader.readAsText(file);
 });
