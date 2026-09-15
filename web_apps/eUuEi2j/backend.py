@@ -384,4 +384,14 @@ def finalize_to_master_sample_data():
             "sample_collection_time": str(last['sample_collection_time'])
         })
 
-    return json.dumps({"ok": True, "skipped": False})
+    # Trigger downstream sync recipe (non-blocking best-effort)
+    job_id = None
+    try:
+        project = dataiku.api_client().get_default_project()
+        job = project.get_recipe("compute_raw_master_sample_data").run()
+        job_id = job.get("id") if isinstance(job, dict) else None
+    except Exception:
+        # Don't fail the user flow if the sync job can't be started
+        pass
+
+    return json.dumps({"ok": True, "skipped": False, "syncJobId": job_id})
