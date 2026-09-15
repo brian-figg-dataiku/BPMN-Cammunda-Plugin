@@ -54,7 +54,7 @@ document.getElementById('save-button').addEventListener('click', async () => {
   }
 });
 
-
+// READ BPMN FILE
 document.getElementById('upload-input').addEventListener('change', function(event) {
   const file = event.target.files[0];
   
