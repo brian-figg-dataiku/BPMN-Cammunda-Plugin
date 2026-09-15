@@ -1,5 +1,5 @@
 {
-  "type": "Filesystem",
+  "type": "Inline",
   "managed": false,
   "featureGroup": false,
   "checklists": {
@@ -38,18 +38,9 @@
   },
   "tags": [],
   "params": {
+    "keepTrackOfChanges": false,
     "notReadyIfEmpty": false,
-    "filesSelectionRules": {
-      "mode": "ALL",
-      "excludeRules": [],
-      "includeRules": [],
-      "explicitFiles": []
-    },
-    "variablesExpansionLoopConfig": {
-      "enabled": false,
-      "mode": "CREATE_VARIABLE_FOR_EACH_COLUMN",
-      "replacements": []
-    }
+    "enableClipboardApi": false
   },
   "schema": {
     "columns": [
