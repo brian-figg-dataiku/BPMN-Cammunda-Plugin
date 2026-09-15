@@ -116,18 +116,22 @@ def _utc_now_iso():
 
 
 def _ensure_datasets_exist():
-    """Create managed datasets in Flow if they don't exist yet."""
+    """Ensure datasets exist and have schemas (idempotent)."""
     project = dataiku.api_client().get_default_project()
     existing = {d["name"] for d in project.list_datasets()}
 
     def ensure(name, schema_cols):
-        if name in existing:
-            return
-        ds = project.create_dataset(name, type="Filesystem")
+        if name not in existing:
+            ds = project.create_dataset(name, type="Filesystem")
+        else:
+            ds = project.get_dataset(name)
+
         settings = ds.get_settings()
-        # Basic schema
-        settings.set_raw_schema({"columns": schema_cols})
-        settings.save()
+        raw = settings.get_raw()
+        cols = (raw.get('schema') or {}).get('columns') or []
+        if len(cols) == 0:
+            settings.set_raw_schema({"columns": schema_cols})
+            settings.save()
 
     ensure(
         SAMPLE_DETAILS_DS,
@@ -170,6 +174,7 @@ except Exception as e:
     init_error = str(e)
 else:
     init_error = None
+
 
 @app.route('/bpmn_summary', methods=['GET'])
 def bpmn_summary():
@@ -215,6 +220,13 @@ def start_session():
 def save_sample_collection_details():
     if init_error:
         return json.dumps({"error": init_error}), 500
+
+    # Ensure schema is present even if dataset was created without columns
+    try:
+        _ensure_datasets_exist()
+    except Exception as e:
+        return json.dumps({"error": str(e)}), 500
+
     payload = request.get_json(force=True) or {}
     session_id = payload.get('session_id')
     location = payload.get('location')
@@ -233,10 +245,17 @@ def save_sample_collection_details():
     return json.dumps({"ok": True, "sample_collection_time": now})
 
 
+
 @app.route('/save_process_adherence', methods=['POST'])
 def save_process_adherence():
     if init_error:
         return json.dumps({"error": init_error}), 500
+
+    try:
+        _ensure_datasets_exist()
+    except Exception as e:
+        return json.dumps({"error": str(e)}), 500
+
     payload = request.get_json(force=True) or {}
     session_id = payload.get('session_id')
     if not session_id:
@@ -266,6 +285,12 @@ def save_process_adherence():
 def save_deviation():
     if init_error:
         return json.dumps({"error": init_error}), 500
+
+    try:
+        _ensure_datasets_exist()
+    except Exception as e:
+        return json.dumps({"error": str(e)}), 500
+
     payload = request.get_json(force=True) or {}
     session_id = payload.get('session_id')
     if not session_id:
@@ -289,6 +314,12 @@ def save_deviation():
 def save_sample_returned():
     if init_error:
         return json.dumps({"error": init_error}), 500
+
+    try:
+        _ensure_datasets_exist()
+    except Exception as e:
+        return json.dumps({"error": str(e)}), 500
+
     payload = request.get_json(force=True) or {}
     session_id = payload.get('session_id')
     if not session_id:
@@ -306,7 +337,6 @@ def save_sample_returned():
         })
 
     return json.dumps({"ok": True})
-
 
 @app.route('/finalize_to_master_sample_data', methods=['POST'])
 def finalize_to_master_sample_data():
