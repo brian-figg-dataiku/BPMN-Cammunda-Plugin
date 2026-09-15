@@ -52,7 +52,11 @@
     }
   },
   "schema": {
-    "columns": [],
+    "columns": [
+      {"name":"session_id","type":"string"},
+      {"name":"sample_collection_location","type":"string"},
+      {"name":"sample_collection_time","type":"string"}
+    ],
     "userModified": true
   },
   "typeSystemVersion": "V2",
