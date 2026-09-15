@@ -340,9 +340,10 @@ def save_sample_returned():
 
 @app.route('/finalize_to_master_sample_data', methods=['POST'])
 def finalize_to_master_sample_data():
-    """Append latest sample details (time+location) and session_id to Snowflake table master_sample_data."""
+    """Append latest sample details (time+location) and session_id to raw_master_sample_data."""
     if init_error:
         return json.dumps({"error": init_error}), 500
+
     payload = request.get_json(force=True) or {}
     session_id = payload.get('session_id')
     if not session_id:
@@ -354,17 +355,17 @@ def finalize_to_master_sample_data():
     if df.empty:
         return json.dumps({"error": "No sample collection details found for this session_id"}), 400
 
-    # pick the most recent by time string
     df = df.sort_values('sample_collection_time')
     last = df.iloc[-1]
 
-    # Append to Snowflake table (requires a dataset named master_sample_data pointing to that table)
+    # Append to target dataset (Snowflake-backed in your Flow)
+    target_name = "raw_master_sample_data"
     try:
-        master = dataiku.Dataset("master_sample_data")
-    except Exception as e:
-        return json.dumps({"error": "Dataset 'master_sample_data' not found in this project. Please create a Snowflake dataset pointing to the master sample data table."}), 500
+        target = dataiku.Dataset(target_name)
+    except Exception:
+        return json.dumps({"error": f"Dataset '{target_name}' not found in this project."}), 500
 
-    with master.get_writer() as w:
+    with target.get_writer() as w:
         w.write_row_dict({
             "session_id": session_id,
             "sample_collection_location": str(last['sample_collection_location']),
