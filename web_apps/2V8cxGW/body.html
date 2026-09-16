@@ -1,15 +1,39 @@
-<!-- bpmn-js CSS -->
-<link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.0.2/dist/assets/diagram-js.css">
-<link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.0.2/dist/assets/bpmn-font/css/bpmn.css">
-<link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.0.2/dist/assets/bpmn-font/css/bpmn-embedded.css">
+<!-- 1. Camunda Pre-packaged CSS -->
+<link rel="stylesheet" href="https://unpkg.com/camunda-bpmn-js@5.34.0/dist/assets/camunda-platform-modeler.css">
 
-<!-- bpmn-js Modeler script -->
-<script src="https://unpkg.com/bpmn-js@17.0.2/dist/bpmn-modeler.development.js"></script>
+<!-- 2. Camunda Pre-packaged JS -->
+<script src="https://unpkg.com/camunda-bpmn-js@5.34.0/dist/camunda-platform-modeler.production.min.js"></script>
 
-<!-- Save to Dataiku Managed Folder Button -->
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+  .bpmn-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+  }
+  #canvas {
+    flex: 1;
+    height: 100%;
+  }
+  #properties-panel {
+    width: 350px;
+    height: 100%;
+    border-left: 1px solid #ccc;
+    background-color: #f8f8f8;
+    overflow-y: auto;
+  }
+</style>
+
+<!-- 3. Side-by-side layout -->
+<div class="bpmn-container">
+  <div id="canvas"></div>
+  <div id="properties-panel"></div>
+</div>
+
+<!-- Save Button remains the same -->
 <button id="save-button" style="position: absolute; bottom: 20px; left: 20px; z-index: 100; padding: 10px; cursor: pointer; font-family: sans-serif; font-weight: bold; background-color: #2ab1ac; color: white; border: none; border-radius: 4px;">
   Save to Dataiku
 </button>
-
-<!-- Canvas container -->
-<div id="canvas"></div>
