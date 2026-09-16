@@ -20,6 +20,7 @@ const bpmnXML = `<?xml version="1.0" encoding="UTF-8"?>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn2:definitions>`;
+
 // The CDN bundle exposes CamundaPlatformModeler on the window object
 const ModelerClass = window.CamundaPlatformModeler || window.BpmnJS;
 
