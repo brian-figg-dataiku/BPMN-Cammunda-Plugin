@@ -21,13 +21,20 @@ const bpmnXML = `<?xml version="1.0" encoding="UTF-8"?>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn2:definitions>`;
-// Initialize the BpmnJS modeler
-const modeler = new BpmnJS({
+// The CDN bundle exposes CamundaPlatformModeler on the window object
+const ModelerClass = window.CamundaPlatformModeler || window.BpmnJS;
+
+const modeler = new ModelerClass({
   container: '#canvas',
   keyboard: {
     bindTo: window
+  },
+  propertiesPanel: {
+    parent: '#properties-panel' // Mounts the panel UI inside our new div
   }
 });
+
+// The rest of your Dataiku endpoints logic (load/save) remains exactly the same
 
 // Render the diagram
 modeler.importXML(bpmnXML)
