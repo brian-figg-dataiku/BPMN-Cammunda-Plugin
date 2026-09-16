@@ -1,4 +1,3 @@
-// A blank BPMN 2.0 diagram to start with
 const bpmnXML = `<?xml version="1.0" encoding="UTF-8"?>
 <bpmn2:definitions 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
